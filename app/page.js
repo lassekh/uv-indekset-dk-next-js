@@ -1,95 +1,103 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'; // Ensure this runs as a Client Component
 
-export default function Home() {
+import React, { useEffect, useState } from 'react';
+import Head from 'next/head';
+import { getLocationData, getWeatherData } from '@/lib/api';
+
+export default function HomePage() {
+  const [error, setError] = useState(null);
+  const [uvIndex, setUvIndex] = useState('');
+  const [currentWeather, setCurrentWeather] = useState('');
+  const [hourlyWeather, setHourlyWeather] = useState([]);
+  const [cityName, setCityName] = useState('');
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      console.log("Geolocation access granted");
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          await fetchWeatherData(latitude, longitude);
+          await fetchLocationData(longitude, latitude);
+        },
+        (error) => {
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              setError("User denied the request for Geolocation.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              setError("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              setError("The request to get user location timed out.");
+              break;
+            default:
+              setError("An unknown error occurred.");
+              break;
+          }
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
+  const fetchWeatherData = async (lat, lon) => {
+    try {
+      const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+      const weatherData = await res.json()
+      setCurrentWeather(weatherData.current);
+      setHourlyWeather(weatherData.hourly);
+      setUvIndex(weatherData.current.uvi);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const fetchLocationData = async (lon, lat) => {
+    const data = await getLocationData(lon, lat);
+    setCityName(data.navn);
+    return data;
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
+    <>
+      <Head>
+        <title>UV Index Now and Next 48 Hours</title>
+        <meta name="description" content={`UV Index right now: ${uvIndex}. Check the expected UV index for today and the next 48 hours.`} />
+      </Head>
+      <h1>UV Index Right Now in {cityName}</h1>
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <>
+          <p className="uv-index">{uvIndex}</p>
           <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
+            The current temperature is {currentWeather.temp}°C, with {currentWeather.humidity}% humidity, and wind speed is {currentWeather.wind_speed} m/s in {cityName}. 
+            The UV index is currently {currentWeather.uvi >= 3 ? "above 3.0, so we recommend using sunscreen or staying in the shade" : "below 3.0, so no need for sunscreen, and you can stay in the sun safely."}
           </p>
-        </a>
-      </div>
-    </main>
+          <h2>UV Index for Today and the Next 48 Hours</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Index</th>
+              </tr>
+            </thead>
+            <tbody>
+              {hourlyWeather.map((hour, index) => {
+                const currentHour = new Date(hour.dt * 1000).getHours();
+                return (
+                  <tr key={index}>
+                    <td>{currentHour}-{currentHour + 1}</td>
+                    <td>{hour.uvi}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </>
+      )}
+    </>
   );
 }
