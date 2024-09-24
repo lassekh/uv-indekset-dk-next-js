@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'; // To handle 404 if needed
 import { getZipCodes, getGeoData, getWeatherData } from '@/lib/api';
 
 export async function generateStaticParams() {
-    const zipCodes = await getZipCodes();  // Get all the zip codes
+    const zipCodes = await getZipCodes();  // Get all the zip codes 1050, 1550, 1800
   
     // Map each zip code into a format that corresponds to the dynamic [zip] route
     return zipCodes.map((zipData) => ({
