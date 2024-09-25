@@ -104,3 +104,28 @@ th, td {
 th {
   font-weight: bold;
 }
+
+ul.menu {
+  list-style-type: none;
+  margin: 0;
+  background-color: black;
+  width: fit-content;
+  margin: auto;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+li.menu-item {
+  display: inline;
+}
+
+li.menu-item:not(:last-child) {
+  border-right: 2px solid #fff;
+}
+
+.menu-item-link {
+  padding: 10px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+}

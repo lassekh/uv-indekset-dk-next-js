@@ -1,14 +1,15 @@
 import Link from "next/link";
+import { getZipCodes } from "@/lib/api";
 
-export default function Locations() {
+export default async function Locations() {
 
-    const zipCodes = ["2800", "2900", "3000", "3100", "3200"]
+    const zipCodes = await getZipCodes()
 
     return (
         <ul>
             {zipCodes.map((zip) => (
-                <li key={zip}>
-                    <Link href={`/lokation/${zip}`}>{zip}</Link>
+                <li key={zip.nr}>
+                    <Link href={`/lokation/${zip.nr}`}>{zip.nr} {zip.navn}</Link>
                 </li>
             ))}
         </ul>

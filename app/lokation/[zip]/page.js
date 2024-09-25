@@ -2,14 +2,14 @@
 import { notFound } from 'next/navigation'; // To handle 404 if needed
 import { getZipCodes, getGeoData, getWeatherData } from '@/lib/api';
 
-export async function generateStaticParams() {
-    const zipCodes = await getZipCodes();  // Get all the zip codes 1050, 1550, 1800
+// export async function generateStaticParams() {
+//     const zipCodes = await getZipCodes();  // Get all the zip codes 1050, 1550, 1800
   
-    // Map each zip code into a format that corresponds to the dynamic [zip] route
-    return zipCodes.map((zipData) => ({
-      zip: zipData.nr,  // Corresponds to the dynamic [zip] route
-    }));
-  }
+//     // Map each zip code into a format that corresponds to the dynamic [zip] route
+//     return zipCodes.map((zipData) => ({
+//       zip: zipData.nr,  // Corresponds to the dynamic [zip] route
+//     }));
+//   }
 
 export default async function LocationPage({ params }) {
   const { zip } = params;
@@ -40,6 +40,10 @@ export default async function LocationPage({ params }) {
       <h2>Nuværende UV-indeks</h2>
       <p className="uv-index">{weatherData.current.uvi}</p>
       <h2>UV-indeks i {currentName} de kommende 48 timer</h2>
+      <p>
+        Hvis du har brug for at kende UV-indekset frem i tiden, f.eks. det forventet UV-indeks resten af dagen eller i morgen,
+        så kan du her se hvor høj ultra violet stråling der er forventet hver time de næste 48 timer. 
+      </p>
       <table>
         <thead>
             <tr>

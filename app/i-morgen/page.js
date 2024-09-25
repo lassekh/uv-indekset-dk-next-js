@@ -1,13 +1,13 @@
-'use client'; // Ensure this runs as a Client Component
-
+'use client'
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { getLocationData, getWeatherData } from '@/lib/api';
 
-export default function HomePage() {
+export default function Tomorrow() {
   const [error, setError] = useState(null);
   const [uvIndex, setUvIndex] = useState('');
-  const [currentWeather, setCurrentWeather] = useState('');
+  const [tomorrowWeather, setTomorrowWeather] = useState('');
+  const [tomorrowTemp, setTomorrowTemp] = useState('');
   const [hourlyWeather, setHourlyWeather] = useState([]);
   const [cityName, setCityName] = useState('');
 
@@ -19,6 +19,7 @@ export default function HomePage() {
           const { latitude, longitude } = position.coords;
           await fetchWeatherData(latitude, longitude);
           await fetchLocationData(longitude, latitude);
+          //setTomorrowTemp(tomorrowWeather.temp)
         },
         (error) => {
           switch (error.code) {
@@ -46,9 +47,10 @@ export default function HomePage() {
     try {
       const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
       const weatherData = await res.json()
-      setCurrentWeather(weatherData.current);
+      setTomorrowWeather(weatherData.daily[1]);
+      setTomorrowTemp(weatherData.daily[1].temp);
       setHourlyWeather(weatherData.hourly);
-      setUvIndex(weatherData.current.uvi);
+      setUvIndex(weatherData.daily[1].uvi);
     } catch (error) {
       console.log(error.message);
     }
@@ -63,23 +65,23 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>UV-indeks i dag og 48 timer frem</title>
-        <meta name="description" content={`UV-indeks lige nu: ${uvIndex} nær dig. Se det forventede UV-indeks i dag nær dig, nu og de næste 48 timer.`} />
+        <title>UV-indeks i morgen</title>
+        <meta name="description" content={`UV-indeks i morgen: ${uvIndex} nær dig. Se det forventede UV-indeks i morgen nær dig, for alle 24 timer.`} />
       </Head>
-      <h1>UV Indeks lige nu i {cityName}</h1>
+      <h1>UV Indeks i morgen i {cityName}</h1>
       {error ? (
         <p>{error}</p>
       ) : (
         <>
           <p className="uv-index">{uvIndex}</p>
           <p>
-            Den nuværende teperatur er {currentWeather.temp}°C, med {currentWeather.humidity}% luftfugtighed, og vindhastigheden er {currentWeather.wind_speed} m/s i {cityName}. 
-            UV indekset er lige nu {currentWeather.uvi >= 3 ? "over 3,0, så vi anbefaler at du bruger solcreme eller bliver i skyggen" : "under 3,0, så det er ikke nødvendigt at bruge solcreme, og du kan sikkert færdes i solen."}
+            Temperaturen i morgen bliver {tomorrowTemp.day}°C, med {tomorrowWeather.humidity}% luftfugtighed, og vindhastigheden bliver {tomorrowWeather.wind_speed} m/s i {cityName}. 
+            UV indekset bliver {tomorrowWeather.uvi >= 3 ? "over 3,0, så vi anbefaler at du bruger solcreme eller bliver i skyggen i morgen" : "under 3,0, så det er ikke nødvendigt at bruge solcreme, og du kan sikkert færdes i solen i morgen."}
           </p>
-          <h2>UV indeks i dag og de næste 48 timer</h2>
+          <h2>UV indeks i morgen time for time</h2>
           <p>
-            Hvis du har brug for at kende UV-indekset frem i tiden, f.eks. det forventet UV-indeks resten af dagen eller i morgen,
-            så kan du her se hvor høj ultra violet stråling der er forventet hver time de næste 48 timer. 
+            Hvis du har brug for at kende UV-indekset i morgen time for time,
+            så kan du her se hvor høj ultra violet stråling der er forventet time for time i morgen. 
           </p>
           <table>
             <thead>

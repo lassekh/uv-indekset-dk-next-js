@@ -9,7 +9,7 @@ export async function GET(request) {
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
   
-  const res = await fetch(`${OWM_DATA_BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,daily&units=metric&appid=${API_KEY}`);
+  const res = await fetch(`${OWM_DATA_BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,alerts&units=metric&appid=${API_KEY}`);
   const data = await res.json();
   return NextResponse.json(data);
 }
