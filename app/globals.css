@@ -129,3 +129,30 @@ li.menu-item:not(:last-child) {
   color: #fff;
   font-weight: 600;
 }
+
+.location-list {
+  list-style-type: none;
+  padding-inline-start: 0;
+}
+
+.footer {
+  font-size: 1.2rem;
+  background-color: black;
+  width: fit-content;
+  margin: auto;
+  padding: 10px;
+  border-radius: 10px;
+  color:#fff;
+}
+
+@media screen and (max-width: 728px) {
+  li.menu-item {
+    display: block;
+    padding: 10px;
+    border-bottom: 2px solid #fff;
+  }
+
+  li.menu-item:not(:last-child) {
+    border-right: none;
+  }
+}

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { getLocationData, getWeatherData } from '@/lib/api';
+import { getLocationData } from '@/lib/api';
 
 export default function HomePage() {
   const [error, setError] = useState(null);

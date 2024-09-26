@@ -10,6 +10,7 @@ export function Header() {
           <ul className="menu">
             <li className="menu-item"><Link className="menu-item-link" href="/">UV i dag</Link></li>
             <li className="menu-item"><Link className="menu-item-link" href="/i-morgen">UV i morgen</Link></li>
+            <li className="menu-item"><Link className="menu-item-link" href="/lokation">Lokation</Link></li>
             <li className="menu-item"><Link className="menu-item-link" href="/om">Om</Link></li>
           </ul>
           </section>
